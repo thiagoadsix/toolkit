@@ -20,7 +20,10 @@ type Tools struct {
 	AllowedFileTypes []string
 }
 
-// RandomString generates a random string of length n, using the characters in randomStringSource.
+// RandomString generates a random string of a specified length using a predefined set of characters.
+// Parameters:
+// - n: The length of the random string to be generated.
+// Returns a string consisting of randomly selected characters from the predefined set.
 func (t *Tools) RandomString(n int) string {
 	s, r := make([]rune, n), []rune(randomStringSource)
 
@@ -40,8 +43,13 @@ type UploadedFile struct {
 	FileSize         int64
 }
 
-// UploadOneFile processes a single file upload request. It accepts an HTTP request, a directory to upload the file to, and an optional boolean
-// parameter to indicate whether the file should be renamed. It returns a pointer to the uploaded file information or an error if the upload fails.
+// UploadOneFile processes a single file upload from an HTTP request, saving it to a specified directory.
+// Optionally, the file can be renamed during the upload process.
+// Parameters:
+// - r: The *http.Request containing the file to be uploaded.
+// - uploadDir: The directory path where the file will be uploaded.
+// - rename: An optional boolean slice indicating whether the file should be renamed (true by default if not specified).
+// Returns a pointer to UploadedFile containing information about the uploaded file, or an error if the upload fails.
 func (t *Tools) UploadOneFile(r *http.Request, uploadDir string, rename ...bool) (*UploadedFile, error) {
 	renameFile := true
 
@@ -58,8 +66,13 @@ func (t *Tools) UploadOneFile(r *http.Request, uploadDir string, rename ...bool)
 	return files[0], nil
 }
 
-// UploadFiles handles multiple file uploads from an HTTP request. It takes the request, the directory where files should be uploaded, and an optional
-// boolean parameter to indicate whether files should be renamed upon upload. It returns a slice of pointers to the uploaded file information or an error if the upload process fails.
+// UploadFiles handles the upload of multiple files from an HTTP request, saving them to a specified directory.
+// Optionally, files can be renamed during the upload process.
+// Parameters:
+// - r: The *http.Request containing the files to be uploaded.
+// - uploadDir: The directory path where the files will be uploaded.
+// - rename: An optional boolean slice indicating whether the files should be renamed (true by default if not specified).
+// Returns a slice of pointers to UploadedFile containing information about the uploaded files, or an error if the upload fails.
 func (t *Tools) UploadFiles(r *http.Request, uploadDir string, rename ...bool) ([]*UploadedFile, error) {
 	renameFile := true
 
@@ -166,7 +179,10 @@ func (t *Tools) UploadFiles(r *http.Request, uploadDir string, rename ...bool) (
 	return uploadedFiles, nil
 }
 
-// CreateDirIfNotExist checks if a directory exists and creates it if it does not. It takes a string parameter representing the path to the directory and returns an error if the directory cannot be created.
+// CreateDirIfNotExist checks for the existence of a directory and creates it if it does not exist.
+// Parameters:
+// - path: The path of the directory to check or create.
+// Returns an error if the directory cannot be created.
 func (t *Tools) CreateDirIfNotExist(path string) error {
 	const mode = 0755
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -179,7 +195,10 @@ func (t *Tools) CreateDirIfNotExist(path string) error {
 	return nil
 }
 
-// Slugify converts a string to a slug. It takes a string parameter and returns a string and an error. The error is returned if the input string is empty or if the string is empty after removing characters.
+// Slugify converts a string into a slug format suitable for URLs, filenames, etc., by removing or replacing characters.
+// Parameters:
+// - s: The string to be slugified.
+// Returns the slugified string and an error if the input string is empty or results in an empty string after processing.
 func (t *Tools) Slugify(s string) (string, error) {
 	if s == "" {
 		return "", errors.New("empty string")
