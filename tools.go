@@ -194,3 +194,21 @@ func (t *Tools) Slugify(s string) (string, error) {
 
 	return slug, nil
 }
+
+// DownloadStaticFile sends a static file located at the specified path to the client as a downloadable file.
+// It sets the HTTP response header to indicate that the content is an attachment, which prompts the browser to download the file.
+// Parameters:
+// - w: The http.ResponseWriter that is used to write the HTTP response.
+// - r: The *http.Request that represents the client's request.
+// - path: The base directory path where the static file is located.
+// - file: The name of the file to be downloaded.
+// - displayName: The name that will be used for the downloaded file on the client's side.
+// This function constructs the full file path by joining the base path and the file name, sets the Content-Disposition header
+// to make the browser treat the response as a file to be downloaded, and then serves the file using http.ServeFile.
+func (t *Tools) DownloadStaticFile(w http.ResponseWriter, r *http.Request, path, file, displayName string) {
+	filePath := filepath.Join(path, file)
+
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", displayName))
+
+	http.ServeFile(w, r, filePath)
+}
