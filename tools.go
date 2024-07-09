@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -176,4 +177,20 @@ func (t *Tools) CreateDirIfNotExist(path string) error {
 		}
 	}
 	return nil
+}
+
+// Slugify converts a string to a slug. It takes a string parameter and returns a string and an error. The error is returned if the input string is empty or if the string is empty after removing characters.
+func (t *Tools) Slugify(s string) (string, error) {
+	if s == "" {
+		return "", errors.New("empty string")
+	}
+
+	var regex = regexp.MustCompile(`[^a-z\d]+`)
+	slug := strings.Trim(regex.ReplaceAllString(strings.ToLower(s), "-"), "-")
+
+	if len(slug) == 0 {
+		return "", errors.New("after removing characters, the string is empty")
+	}
+
+	return slug, nil
 }
