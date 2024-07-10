@@ -228,10 +228,12 @@ func (t *Tools) Slugify(s string) (string, error) {
 // - displayName: The name that will be used for the downloaded file on the client's side.
 // This function constructs the full file path by joining the base path and the file name, sets the Content-Disposition header
 // to make the browser treat the response as a file to be downloaded, and then serves the file using http.ServeFile.
-func (t *Tools) DownloadStaticFile(w http.ResponseWriter, r *http.Request, pathName, displayName string) {
+func (t *Tools) DownloadStaticFile(w http.ResponseWriter, r *http.Request, path, file, displayName string) {
+	filePath := filepath.Join(path, file)
+
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", displayName))
 
-	http.ServeFile(w, r, pathName)
+	http.ServeFile(w, r, filePath)
 }
 
 // JSONResponse represents the structure of a JSON response.
