@@ -344,6 +344,14 @@ func (t *Tools) WriteJSON(w http.ResponseWriter, status int, data interface{}, h
 	return nil
 }
 
+// ErrorJSON sends a JSON-formatted error response to the client with an optional HTTP status code.
+// This function constructs a JSONResponse struct with the error flag set to true and the error message from the provided error.
+// If an HTTP status code is provided in the variadic 'status' parameter, it uses that status code for the response; otherwise, it defaults to http.StatusBadRequest (400).
+// Parameters:
+// - w: The http.ResponseWriter to write the error response to.
+// - err: The error object whose message will be included in the JSON response.
+// - status: An optional variadic parameter that allows specifying the HTTP status code for the response. Only the first value is used if multiple are provided.
+// Returns an error if writing the JSON response fails.
 func (t *Tools) ErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 	statusCode := http.StatusBadRequest
 
