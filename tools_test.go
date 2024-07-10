@@ -16,6 +16,18 @@ import (
 	"testing"
 )
 
+type RoundTripFunc func(req *http.Request) *http.Response
+
+func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req), nil
+}
+
+func NewTestClient(fn RoundTripFunc) *http.Client {
+	return &http.Client{
+		Transport: RoundTripFunc(fn),
+	}
+}
+
 func TestTools_RandomString(t *testing.T) {
 	var testTools Tools
 
@@ -332,5 +344,27 @@ func TestTools_WriteError(t *testing.T) {
 
 	if rr.Code != http.StatusServiceUnavailable {
 		t.Errorf("expected status code to be %d, got %d", http.StatusServiceUnavailable, rr.Code)
+	}
+}
+
+func TestTools_PushJSONToRemote(t *testing.T) {
+	client := NewTestClient(func(req *http.Request) *http.Response {
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       io.NopCloser(bytes.NewBufferString("")),
+			Header:     make(http.Header),
+		}
+	})
+
+	var testTools Tools
+
+	var foo struct {
+		Bar string `json:"bar"`
+	}
+	foo.Bar = "bar"
+
+	_, _, err := testTools.PushJSONToRemote("http://example.com/some/path", foo, client)
+	if err != nil {
+		t.Errorf("failed to push json to remote: %v", err)
 	}
 }
