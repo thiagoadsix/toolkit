@@ -312,3 +312,34 @@ func (t *Tools) ReadJSON(w http.ResponseWriter, r *http.Request, data interface{
 
 	return nil
 }
+
+// WriteJSON sends a JSON response with custom HTTP headers to the client.
+// This method marshals the provided data into JSON, sets any provided custom headers, and writes the response to the client.
+// Parameters:
+// - w: The http.ResponseWriter to write the JSON response to.
+// - status: The HTTP status code for the response.
+// - data: The data to be marshaled into JSON and sent in the response body.
+// - headers: An optional slice of http.Header, allowing for custom headers to be set. Only the first header in the slice is considered if provided.
+// Returns an error if marshaling the data into JSON fails or if writing the response fails.
+func (t *Tools) WriteJSON(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
+	out, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	if len(headers) > 0 {
+		for key, value := range headers[0] {
+			w.Header()[key] = value
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+
+	_, err = w.Write(out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
